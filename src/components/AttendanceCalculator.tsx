@@ -11,13 +11,11 @@ import { useToast } from '@/hooks/use-toast';
 import AttendanceChart from './AttendanceChart';
 import AttendanceInsights from './AttendanceInsights';
 import ExportDialog from './ExportDialog';
-
 interface AttendanceData {
   totalClasses: number;
   attendedClasses: number;
   targetPercentage: number;
 }
-
 interface AttendanceResult {
   currentPercentage: number;
   status: 'safe' | 'warning' | 'danger';
@@ -25,21 +23,23 @@ interface AttendanceResult {
   classesToBunk: number;
   message: string;
 }
-
 const AttendanceCalculator = () => {
   const [data, setData] = useState<AttendanceData>({
     totalClasses: 0,
     attendedClasses: 0,
     targetPercentage: 75
   });
-  
   const [result, setResult] = useState<AttendanceResult | null>(null);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const calculateAttendance = useCallback(() => {
-    const { totalClasses, attendedClasses, targetPercentage } = data;
-
+    const {
+      totalClasses,
+      attendedClasses,
+      targetPercentage
+    } = data;
     if (totalClasses <= 0) {
       toast({
         title: "Invalid Input",
@@ -48,10 +48,9 @@ const AttendanceCalculator = () => {
       });
       return;
     }
-
     if (attendedClasses > totalClasses) {
       toast({
-        title: "Invalid Input", 
+        title: "Invalid Input",
         description: "Attended classes cannot exceed total classes",
         variant: "destructive"
       });
@@ -59,22 +58,16 @@ const AttendanceCalculator = () => {
     }
 
     // Calculate percentage with 2 decimal precision as requested
-    const currentPercentage = parseFloat(((attendedClasses / totalClasses) * 100).toFixed(2));
-    
+    const currentPercentage = parseFloat((attendedClasses / totalClasses * 100).toFixed(2));
+
     // Calculate classes needed to reach target
-    const classesToAttend = Math.max(0, Math.ceil(
-      (targetPercentage * totalClasses - 100 * attendedClasses) / (100 - targetPercentage)
-    ));
+    const classesToAttend = Math.max(0, Math.ceil((targetPercentage * totalClasses - 100 * attendedClasses) / (100 - targetPercentage)));
 
     // Calculate classes that can be bunked while maintaining target
-    const maxMissableClasses = Math.floor(
-      (attendedClasses - (targetPercentage / 100) * totalClasses) / (targetPercentage / 100)
-    );
+    const maxMissableClasses = Math.floor((attendedClasses - targetPercentage / 100 * totalClasses) / (targetPercentage / 100));
     const classesToBunk = Math.max(0, maxMissableClasses);
-
     let status: 'safe' | 'warning' | 'danger';
     let message: string;
-
     if (currentPercentage >= targetPercentage) {
       status = 'safe';
       message = `Great! You're ${(currentPercentage - targetPercentage).toFixed(1)}% above target. Safe to bunk ${classesToBunk} classes.`;
@@ -85,7 +78,6 @@ const AttendanceCalculator = () => {
       status = 'danger';
       message = `Critical! You need to attend ${classesToAttend} more classes to avoid condonation.`;
     }
-
     setResult({
       currentPercentage,
       status,
@@ -93,30 +85,32 @@ const AttendanceCalculator = () => {
       classesToBunk,
       message
     });
-
     toast({
       title: "Calculation Complete",
-      description: `Current attendance: ${currentPercentage.toFixed(2)}%`,
+      description: `Current attendance: ${currentPercentage.toFixed(2)}%`
     });
   }, [data, toast]);
-
   const resetCalculator = () => {
-    setData({ totalClasses: 0, attendedClasses: 0, targetPercentage: 75 });
+    setData({
+      totalClasses: 0,
+      attendedClasses: 0,
+      targetPercentage: 75
+    });
     setResult(null);
     toast({
       title: "Calculator Reset",
-      description: "All fields have been cleared",
+      description: "All fields have been cleared"
     });
   };
-
   const updateData = (field: keyof AttendanceData, value: string) => {
     const numValue = parseInt(value) || 0;
-    setData(prev => ({ ...prev, [field]: numValue }));
+    setData(prev => ({
+      ...prev,
+      [field]: numValue
+    }));
   };
-
   const getStatusIcon = () => {
     if (!result) return <Calculator className="h-5 w-5" />;
-    
     switch (result.status) {
       case 'safe':
         return <CheckCircle className="h-5 w-5 text-success" />;
@@ -128,10 +122,8 @@ const AttendanceCalculator = () => {
         return <Calculator className="h-5 w-5" />;
     }
   };
-
   const getStatusBadgeVariant = () => {
     if (!result) return 'secondary';
-    
     switch (result.status) {
       case 'safe':
         return 'default';
@@ -143,9 +135,7 @@ const AttendanceCalculator = () => {
         return 'secondary';
     }
   };
-
-  return (
-    <div className="min-h-screen bg-background p-4 md:p-6">
+  return <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="mx-auto max-w-4xl space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
@@ -175,80 +165,38 @@ const AttendanceCalculator = () => {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="total-classes">Total Classes Held *</Label>
-                <Input
-                  id="total-classes"
-                  type="number"
-                  min="1"
-                  placeholder="e.g., 50"
-                  value={data.totalClasses || ''}
-                  onChange={(e) => updateData('totalClasses', e.target.value)}
-                  className="h-12"
-                />
+                <Label htmlFor="total-classes">Total Classes Held </Label>
+                <Input id="total-classes" type="number" min="1" placeholder="e.g., 50" value={data.totalClasses || ''} onChange={e => updateData('totalClasses', e.target.value)} className="h-12" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="attended-classes">Classes Attended *</Label>
-                <Input
-                  id="attended-classes"
-                  type="number"
-                  min="0"
-                  placeholder="e.g., 40"
-                  value={data.attendedClasses || ''}
-                  onChange={(e) => updateData('attendedClasses', e.target.value)}
-                  className="h-12"
-                />
+                <Label htmlFor="attended-classes">Classes Attended </Label>
+                <Input id="attended-classes" type="number" min="0" placeholder="e.g., 40" value={data.attendedClasses || ''} onChange={e => updateData('attendedClasses', e.target.value)} className="h-12" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="target-percentage">Target Percentage</Label>
-                <Input
-                  id="target-percentage"
-                  type="number"
-                  min="1"
-                  max="100"
-                  placeholder="75"
-                  value={data.targetPercentage || ''}
-                  onChange={(e) => updateData('targetPercentage', e.target.value)}
-                  className="h-12"
-                />
+                <Input id="target-percentage" type="number" min="1" max="100" placeholder="75" value={data.targetPercentage || ''} onChange={e => updateData('targetPercentage', e.target.value)} className="h-12" />
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button 
-                onClick={calculateAttendance} 
-                className="flex-1" 
-                variant="hero" 
-                size="xl"
-                disabled={!data.totalClasses || !data.attendedClasses}
-              >
+              <Button onClick={calculateAttendance} className="flex-1" variant="hero" size="xl" disabled={!data.totalClasses || !data.attendedClasses}>
                 <Calculator className="h-5 w-5" />
                 Calculate Attendance
               </Button>
-              <Button 
-                onClick={resetCalculator} 
-                variant="reset" 
-                size="lg"
-              >
+              <Button onClick={resetCalculator} variant="reset" size="lg">
                 <RotateCcw className="h-4 w-4" />
                 Reset
               </Button>
-              {result && (
-                <Button 
-                  onClick={() => setIsExportDialogOpen(true)} 
-                  variant="accent" 
-                  size="lg"
-                >
+              {result && <Button onClick={() => setIsExportDialogOpen(true)} variant="accent" size="lg">
                   <Share2 className="h-4 w-4" />
                   Export Report
-                </Button>
-              )}
+                </Button>}
             </div>
           </CardContent>
         </Card>
 
         {/* Results */}
-        {result && (
-          <div className="space-y-6 animate-slide-up">
+        {result && <div className="space-y-6 animate-slide-up">
             {/* Status Card */}
             <Card className="bg-gradient-card shadow-card border-0">
               <CardHeader>
@@ -268,33 +216,22 @@ const AttendanceCalculator = () => {
                     <span>Attendance Progress</span>
                     <span className="font-bold">{result.currentPercentage.toFixed(2)}%</span>
                   </div>
-                  <Progress 
-                    value={result.currentPercentage} 
-                    className="h-3"
-                  />
+                  <Progress value={result.currentPercentage} className="h-3" />
                 </div>
                 
-                <div className={`p-4 rounded-lg border-l-4 ${
-                  result.status === 'safe' ? 'bg-success-light border-success' :
-                  result.status === 'warning' ? 'bg-warning-light border-warning' :
-                  'bg-destructive-light border-destructive'
-                }`}>
+                <div className={`p-4 rounded-lg border-l-4 ${result.status === 'safe' ? 'bg-success-light border-success' : result.status === 'warning' ? 'bg-warning-light border-warning' : 'bg-destructive-light border-destructive'}`}>
                   <p className="font-medium">{result.message}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {result.status !== 'safe' && result.classesToAttend > 0 && (
-                    <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  {result.status !== 'safe' && result.classesToAttend > 0 && <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                       <span className="text-sm font-medium">Classes to attend:</span>
                       <Badge variant="secondary">{result.classesToAttend}</Badge>
-                    </div>
-                  )}
-                  {result.status === 'safe' && result.classesToBunk > 0 && (
-                    <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    </div>}
+                  {result.status === 'safe' && result.classesToBunk > 0 && <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                       <span className="text-sm font-medium">Safe to bunk:</span>
                       <Badge variant="default">{result.classesToBunk}</Badge>
-                    </div>
-                  )}
+                    </div>}
                 </div>
               </CardContent>
             </Card>
@@ -304,19 +241,11 @@ const AttendanceCalculator = () => {
             
             {/* Insights */}
             <AttendanceInsights data={data} result={result} />
-          </div>
-        )}
+          </div>}
 
         {/* Export Dialog */}
-        <ExportDialog
-          open={isExportDialogOpen}
-          onOpenChange={setIsExportDialogOpen}
-          data={data}
-          result={result}
-        />
+        <ExportDialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen} data={data} result={result} />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default AttendanceCalculator;
