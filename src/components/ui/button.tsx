@@ -9,19 +9,20 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-soft hover:shadow-card",
+        default: "bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-soft hover:shadow-card transition-smooth",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-smooth",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-smooth",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        success: "bg-gradient-success text-success-foreground hover:opacity-90 shadow-success",
-        warning: "bg-gradient-warning text-warning-foreground hover:opacity-90 shadow-warning",
-        hero: "bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-card hover:shadow-lg transform hover:scale-105 transition-bounce",
-        reset: "bg-muted text-muted-foreground hover:bg-destructive hover:text-destructive-foreground border border-border",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-smooth",
+        ghost: "hover:bg-accent hover:text-accent-foreground transition-smooth",
+        link: "text-primary underline-offset-4 hover:underline transition-smooth",
+        success: "bg-gradient-success text-success-foreground hover:opacity-90 shadow-success transition-smooth",
+        warning: "bg-gradient-warning text-warning-foreground hover:opacity-90 transition-smooth",
+        hero: "bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-card hover:shadow-lg transform hover:scale-105 transition-bounce font-semibold",
+        reset: "bg-muted text-muted-foreground hover:bg-destructive hover:text-destructive-foreground border border-border transition-smooth",
+        accent: "bg-gradient-accent text-accent-foreground hover:opacity-90 shadow-accent hover:shadow-lg transform hover:scale-105 transition-bounce font-semibold",
       },
       size: {
         default: "h-10 px-4 py-2",

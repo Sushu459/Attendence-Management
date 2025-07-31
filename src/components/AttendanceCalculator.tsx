@@ -58,7 +58,8 @@ const AttendanceCalculator = () => {
       return;
     }
 
-    const currentPercentage = (attendedClasses / totalClasses) * 100;
+    // Calculate percentage with 2 decimal precision as requested
+    const currentPercentage = parseFloat(((attendedClasses / totalClasses) * 100).toFixed(2));
     
     // Calculate classes needed to reach target
     const classesToAttend = Math.max(0, Math.ceil(
@@ -95,7 +96,7 @@ const AttendanceCalculator = () => {
 
     toast({
       title: "Calculation Complete",
-      description: `Current attendance: ${currentPercentage.toFixed(1)}%`,
+      description: `Current attendance: ${currentPercentage.toFixed(2)}%`,
     });
   }, [data, toast]);
 
@@ -147,24 +148,28 @@ const AttendanceCalculator = () => {
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="mx-auto max-w-4xl space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <BookOpen className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="p-3 rounded-full bg-gradient-primary shadow-card">
+              <BookOpen className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold font-inter bg-gradient-primary bg-clip-text text-transparent">
               Student Attendance Calculator
             </h1>
           </div>
-          <p className="text-muted-foreground text-lg">
-            Plan your attendance to stay above the 75% minimum requirement
+          <p className="text-muted-foreground text-lg font-medium max-w-2xl mx-auto">
+            Advanced attendance tracking with precise calculations and smart insights
           </p>
         </div>
 
         {/* Input Card */}
-        <Card className="bg-gradient-card shadow-card border-0">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              Input Your Data
+        <Card className="bg-gradient-card shadow-card border-0 hover:shadow-lg transition-smooth">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+              <div className="p-2 rounded-lg bg-gradient-accent">
+                <Target className="h-5 w-5 text-accent-foreground" />
+              </div>
+              Enter Your Attendance Data
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -213,10 +218,10 @@ const AttendanceCalculator = () => {
                 onClick={calculateAttendance} 
                 className="flex-1" 
                 variant="hero" 
-                size="lg"
+                size="xl"
                 disabled={!data.totalClasses || !data.attendedClasses}
               >
-                <Calculator className="h-4 w-4" />
+                <Calculator className="h-5 w-5" />
                 Calculate Attendance
               </Button>
               <Button 
@@ -230,11 +235,11 @@ const AttendanceCalculator = () => {
               {result && (
                 <Button 
                   onClick={() => setIsExportDialogOpen(true)} 
-                  variant="outline" 
+                  variant="accent" 
                   size="lg"
                 >
                   <Share2 className="h-4 w-4" />
-                  Share
+                  Export Report
                 </Button>
               )}
             </div>
@@ -252,16 +257,16 @@ const AttendanceCalculator = () => {
                     {getStatusIcon()}
                     Current Status
                   </div>
-                  <Badge variant={getStatusBadgeVariant()}>
-                    {result.currentPercentage.toFixed(1)}%
+                  <Badge variant={getStatusBadgeVariant()} className="text-lg px-4 py-2 font-bold">
+                    {result.currentPercentage.toFixed(2)}%
                   </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-sm font-medium">
                     <span>Attendance Progress</span>
-                    <span>{result.currentPercentage.toFixed(1)}%</span>
+                    <span className="font-bold">{result.currentPercentage.toFixed(2)}%</span>
                   </div>
                   <Progress 
                     value={result.currentPercentage} 
